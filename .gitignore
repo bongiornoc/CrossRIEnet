@@ -31,11 +31,15 @@ datasets/
 
 # Testing
 .pytest_cache/
+.coverage
+htmlcov/
 test_env/
 
+# Documentation
+docs/_build/
+docs/generated/
 
 # Project-specific
 my_test.ipynb
 verification_script.py
 manual_testing.ipynb
-tests/test_padding_leakage.py
