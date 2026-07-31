@@ -1,32 +1,80 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "crossrie"
-version = "0.1.0"
-description = "Cross Covariance Cleaning package"
+name = "crient"
+version = "0.2.0"
+description = "Dimension-aware neural cleaning of rectangular cross-correlations"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10,<3.13"
+license = "MIT"
+license-files = ["LICENSE", "NOTICE"]
+authors = [
+    {name = "Efstratios Manolakis"},
+    {name = "Christian Bongiorno"},
+    {name = "Rosario N. Mantegna"},
+]
+keywords = [
+    "cross-correlation",
+    "random-matrix-theory",
+    "singular-value-decomposition",
+    "tensorflow",
+    "keras",
+]
 classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Mathematics",
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "tensorflow>=2.10.0",
-    "keras>=3.0.0",
-    "numpy>=1.24.0,<2",
+    "tensorflow>=2.16.1,<2.22",
+    "keras>=3.0,<4",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0",
+    "build>=1.2",
+    "coverage[toml]>=7.6",
+    "mypy>=1.11",
+    "numpydoc>=1.8",
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.9",
     "scipy>=1.10.0",
+    "sphinx>=8.0",
+    "twine>=6.0",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/Efstratios7/CrossRIEnet"
-"Bug Tracker" = "https://github.com/Efstratios7/CrossRIEnet/issues"
+"Homepage" = "https://github.com/Efstratios7/CrossRIE"
+"Documentation" = "https://github.com/Efstratios7/CrossRIE/tree/main/docs"
+"Bug Tracker" = "https://github.com/Efstratios7/CrossRIE/issues"
+"Source" = "https://github.com/Efstratios7/CrossRIE"
 
 [tool.setuptools.packages.find]
-include = ["crossrie*"]
+include = ["crient*"]
+
+[tool.pytest.ini_options]
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.10"
+packages = ["crient"]
+ignore_missing_imports = true
+check_untyped_defs = true
+warn_unused_ignores = true

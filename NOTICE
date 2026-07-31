@@ -1,0 +1,22 @@
+CRIENT / CrossRIEnet
+====================
+
+CRIENT implements the CrossRIEnet architecture described in:
+
+Efstratios Manolakis, Christian Bongiorno, and Rosario N. Mantegna,
+"Physics-Informed Singular-Value Learning for Cross-Covariances Forecasting
+in Financial Markets", arXiv:2601.07687v3 (2026).
+
+Relationship to RIEnet
+----------------------
+
+CrossRIEnet is a rectangular, singular-value-based companion to RIEnet's
+square, eigenvalue-based rotationally invariant architecture.  The public API
+and package organization intentionally follow RIEnet conventions where those
+conventions are suitable for rectangular cross-correlation cleaning.
+
+CRIENT is an independent package and does not import RIEnet or rely on RIEnet
+private symbols.  Similar trainable building blocks reflect the shared
+methodological lineage.  Git history does not establish that the current code
+was copied from a particular RIEnet revision, so no stronger provenance claim
+is made here.
