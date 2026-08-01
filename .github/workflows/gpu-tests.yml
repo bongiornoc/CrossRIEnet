@@ -1,0 +1,20 @@
+name: Optional GPU tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  gpu:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: [self-hosted, linux, x64, gpu]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install CRIENT
+        run: python -m pip install -e ".[dev]"
+      - name: Verify GPU and run tests
+        run: |
+          python -c "import tensorflow as tf; assert tf.config.list_physical_devices('GPU')"
+          pytest

@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use CRIENT, please cite the paper and this software."
+title: "CRIENT: CrossRIEnet for rectangular cross-correlation cleaning"
+type: software
+version: 0.2.0
+authors:
+  - family-names: Manolakis
+    given-names: Efstratios
+  - family-names: Bongiorno
+    given-names: Christian
+  - family-names: Mantegna
+    given-names: Rosario N.
+repository-code: "https://github.com/Efstratios7/CrossRIE"
+license: MIT
+preferred-citation:
+  type: article
+  title: "Physics-Informed Singular-Value Learning for Cross-Covariances Forecasting in Financial Markets"
+  authors:
+    - family-names: Manolakis
+      given-names: Efstratios
+    - family-names: Bongiorno
+      given-names: Christian
+    - family-names: Mantegna
+      given-names: Rosario N.
+  year: 2026
+  url: "https://arxiv.org/abs/2601.07687"

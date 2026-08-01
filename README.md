@@ -1,161 +1,383 @@
-# CrossRIEnet
+# CRIENT: CrossRIEnet for Rectangular Cross-Correlation Cleaning
 
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.10--3.12](https://img.shields.io/badge/python-3.10--3.12-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**This library implements the neural estimators introduced in:**
-- **Manolakis, E., Bongiorno, C., & Mantegna, R. N. (2025). Physics-Informed Singular-Value Learning for Cross-Covariances Forecasting in Financial Markets. Working Paper (arXiv:2601.07687). [https://www.arxiv.org/abs/2601.07687](https://www.arxiv.org/abs/2601.07687)**
+**This library implements the neural estimator introduced in:**
 
+- **Manolakis, E., Bongiorno, C., & Mantegna, R. N. (2026).
+  Physics-Informed Singular-Value Learning for Cross-Covariances Forecasting
+  in Financial Markets. [arXiv:2601.07687v3](https://arxiv.org/abs/2601.07687).**
 
-## Key Features
+CRIENT is a TensorFlow/Keras research implementation for cleaning rectangular
+cross-correlation matrices. Given two marginal correlation matrices, their
+empirical cross-correlation and the corresponding sample size, the model
+learns corrections to the empirical spectral coefficients and reconstructs a
+cross-correlation matrix in the empirical singular-vector basis.
 
-- **Physics-Informed Neural Architecture**: The model utilizes a custom neural architecture designed to operate directly in the empirical singular-vector basis. By parameterizing the cleaning process as a nonlinear map from empirical singular values to cleaned values, the network explicitly enforces the problem's symmetries and rotational invariance implied by Random Matrix Theory (RMT).
+The package operates on correlation matrices. Estimation of marginal
+volatilities, conversion to cross-covariances and preprocessing of raw returns
+are outside the core API.
 
-- **Random Matrix Theory (RMT) as a Limiting Case**: The architecture is constructed to embed the asymptotically optimal Benaych-Georges, Bouchaud, and Potters (BBP) analytical solution as a special case. This "physics-informed" constraint ensures the model can recover theoretically optimal denoising in stationary regimes while providing the flexibility to adapt to real-world non-stationary dynamics and macroscopic market modes.
+Version 0.2 is an unreleased API revision. It does not provide compatibility
+aliases for the earlier `crossrie` package.
 
-- **RIE-Style Cross-Covariance Cleaning**: Building on Rotationally Invariant Estimators (RIE), the method preserves the empirical singular vectors while performing nonlinear shrinkage on the singular values. This approach generalizes classical covariance cleaning to the rectangular cross-covariance setting, effectively characterizing comovements between different sets of assets even in high-dimensional regimes.
+## Relationship to RIEnet
 
-- **Robust End-to-End Forecasting**: Unlike purely analytical cleaners that rely on strict stationarity and bounded spectra, this framework is trained end-to-end to minimize out-of-sample (OOS) reconstruction error. The design is dimension-agnostic, allowing a model trained on one range of assets to be deployed across different universe sizes and relative dimensions without retraining.
+[RIEnet](https://github.com/bongiornoc/RIEnet) applies learned spectral
+corrections to square covariance and correlation matrices through an
+eigendecomposition. CrossRIEnet applies a related construction to rectangular
+cross-correlation matrices through a singular-value decomposition.
 
-- **Numerically Stable SVD**: The internal SVD routine (`svd_via_eigh_full`) automatically upcasts to `float64` during eigendecomposition and projects back to the original dtype on output. This ensures consistent numerical precision across CPU and GPU backends without requiring the user to change the global dtype policy.
+CRIENT is currently an independent package. It does not import RIEnet or rely
+on RIEnet private symbols. Matrix outputs from the two packages can be composed
+in an external workflow when marginal covariance or precision estimates are
+also required.
 
-- **Strict `outputs` Parameter Validation**: The API strictly validates the `outputs` parameter passed to `CrossRIEnetLayer`. Strings are rejected with a `TypeError` (must be a list or tuple), empty collections raise a `ValueError`, and any key not in the allowed set `{'Cxy', 'Sxy'}` raises a `ValueError`. This prevents silent misconfiguration.
+## What this package provides
 
-- **Native `float64` Precision Preservation**: All internal custom layers (including `CustomNormalizationLayer`) natively preserve `float64` precision without silent downcasting. Intermediate computations dynamically inherit the input tensor's dtype, ensuring that `float64` inputs produce `float64` outputs end-to-end.
+- A Keras layer for learned cleaning of rectangular cross-correlations
+- Additive, bounded-multiplicative and positive-multiplicative corrections
+- Access to the reconstructed matrix, spectral coefficients and intermediate
+  spectral quantities
+- Support for varying batch size and matrix dimensions in one traced function
+- Float32, float64 and Keras mixed-precision policies
+- Structural validation and optional validation of the full correlation block
+- Keras `.keras` serialization and training through `Model.fit`
+
+## Module organization
+
+- `crient.layer`: the public `CrossRIEnetLayer`.
+- `crient.trainable_layers`: the shared encoder, recurrent aggregator and
+  correction head.
+- `crient.ops_layers`: deterministic projection, padding and reconstruction
+  layers.
+- `crient.spectral`: the full-basis spectral backend.
+- `crient.validation`: input and correlation-domain validation.
+- `crient.diagnostics`: non-mutating feasibility diagnostics.
 
 ## Installation
 
-### Using pip (from source)
+CRIENT has not been published to PyPI. Install it from a local checkout:
 
 ```bash
-git clone https://github.com/Efstratios7/CrossRIEnet.git
-cd CrossRIEnet
-pip install -e .
+git clone https://github.com/Efstratios7/CrossRIE.git
+cd CrossRIE
+python -m pip install -e .
 ```
 
-### Using Conda
+For development:
 
 ```bash
-git clone https://github.com/Efstratios7/CrossRIEnet.git
-cd CrossRIEnet
-conda env create -f environment.yml
-conda activate crossrie_env
-pip install -e .
+python -m pip install -e ".[dev]"
+pytest
 ```
 
-## Quick Start
+The supplied Conda environment can be created with:
 
-### Basic Usage
-The core component is the `CrossRIEnetLayer`. It expects four inputs: the two marginal covariance matrices ($\mathbf{C_{XX}}$, $\mathbf{C_{YY}}$), the cross-correlation matrix ($\mathbf{C_{XY}}$), and the number of samples ($T$).
+```bash
+conda env update --file environment.yml --prune
+conda activate crient_env
+python -m pip install -e ".[dev]"
+```
+
+## Quick start
+
+The examples below construct the three input matrices from the same joint
+return sample. This ensures that the marginal matrices and cross-correlation
+belong to one valid correlation block.
 
 ```python
 import tensorflow as tf
-from crossrie.layer import CrossRIEnetLayer
 
-# Initialize the layer
-# By default, it returns the cleaned Cross-Correlation matrix 'Cxy'
-cross_rie = CrossRIEnetLayer(
-    encoding_units=[16, 2],
-    lstm_units=[128, 64],
-    outputs=['Cxy', 'Sxy']
+from crient import CrossRIEnetLayer
+
+
+def correlation_blocks(returns, n_x):
+    """Compute correlation blocks from returns shaped (batch, time, variables)."""
+    centered = returns - tf.reduce_mean(returns, axis=1, keepdims=True)
+    standardized = centered / tf.math.reduce_std(
+        centered,
+        axis=1,
+        keepdims=True,
+    )
+    sample_size = tf.shape(standardized)[1]
+    correlation = tf.matmul(
+        standardized,
+        standardized,
+        transpose_a=True,
+    ) / tf.cast(sample_size, standardized.dtype)
+    return (
+        correlation[:, :n_x, :n_x],
+        correlation[:, n_x:, n_x:],
+        correlation[:, :n_x, n_x:],
+    )
+
+
+batch_size = 32
+sample_size = 60
+n_x = 10
+n_y = 8
+
+returns = tf.random.stateless_normal(
+    (batch_size, sample_size, n_x + n_y),
+    seed=(1, 2),
+)
+correlation_x, correlation_y, cross_correlation = correlation_blocks(
+    returns,
+    n_x,
 )
 
-# Generate dummy data (Batch, N, M)
-B, N, M, T = 32, 10, 12, 100
-Cxx = tf.random.normal((B, N, N))
-Cyy = tf.random.normal((B, M, M))
-Cxy = tf.random.normal((B, N, M))
-T_samples = tf.constant([T] * B) # Number of samples which are used to compute the covariance matrices Cxx and Cyy
+inputs = {
+    "correlation_x": correlation_x,
+    "correlation_y": correlation_y,
+    "cross_correlation": cross_correlation,
+    "sample_size": tf.fill((batch_size,), tf.cast(sample_size, tf.float32)),
+}
 
-# Forward pass
-outputs = cross_rie([Cxx, Cyy, Cxy, T_samples])
+cleaned = CrossRIEnetLayer(output_type="cross_correlation")(
+    inputs,
+    training=False,
+)
 
-Cxy_clean = outputs['Cxy']      # Denoised Cross-Correlation
-Sxy_clean = outputs['Sxy']      # Cleaned Singular Values
-
-print("Cleaned Cxy shape:", Cxy_clean.shape)
-print("Cleaned Sxy shape:", Sxy_clean.shape)
+print(cleaned.shape)  # (32, 10, 8)
 ```
 
-### Training
-The layer is fully differentiable and can be trained using standard Keras optimization workflows.
+The input may also be supplied as a four-element sequence in this order:
+
+```python
+cleaned = CrossRIEnetLayer()(
+    [
+        correlation_x,
+        correlation_y,
+        cross_correlation,
+        inputs["sample_size"],
+    ],
+    training=False,
+)
+```
+
+`sample_size` accepts shape `(batch,)` or `(batch, 1)`. It may use an integer
+or floating dtype, must be strictly positive, and may differ between samples in
+the same batch.
+
+## Training
+
+The example below generates one regularized Wishart correlation population per
+training example. Empirical blocks are estimated from finite Gaussian samples;
+the corresponding population cross-correlation is the target. This illustrates
+the `Model.fit` interface, not the training protocol used in the paper.
 
 ```python
 import tensorflow as tf
-from keras import Model, Input
-from crossrie.layer import CrossRIEnetLayer
 
-B, N, M, T = 32, 10, 12, 100
+from crient import CrossRIEnetLayer
 
-def create_model():
-    # Shapes are (None, None) to allow variable sequence lengths
-    input_cxx = Input(shape=(None, None), name='Cxx')
-    input_cyy = Input(shape=(None, None), name='Cyy')
-    input_cxy = Input(shape=(None, None), name='Cxy')
-    input_t = Input(shape=(None,), name='T_samples')
-    
-    # Forward pass
-    cxy_clean = CrossRIEnetLayer(outputs=['Cxy'])([input_cxx, input_cyy, input_cxy, input_t])
-    
-    return Model(inputs=[input_cxx, input_cyy, input_cxy, input_t], outputs=cxy_clean)
 
-model = create_model()
-model.compile(optimizer='adam', loss='mse')
+def generate_populations(count, dimension, seed=(1, 2)):
+    factors = tf.random.stateless_normal((count, dimension, dimension), seed)
+    covariance = tf.matmul(factors, factors, transpose_b=True)
+    covariance += 0.5 * tf.eye(dimension)
+    scale = tf.sqrt(tf.linalg.diag_part(covariance))
+    return covariance / scale[..., :, None] / scale[..., None, :]
 
-# Training Data
-# In a real scenario, these would be computed from your data.
-# Cxx: (Batch, N, N), Cyy: (Batch, M, M), Cxy: (Batch, N, M)
-Cxx = tf.random.normal((B, N, N))
-Cyy = tf.random.normal((B, M, M))
-Cxy = tf.random.normal((B, N, M))
 
-# T_samples must match the batch dimension. 
-# It represents the number of time steps T used to compute the correlations/covariances.
-# Shape: (Batch, 1) or (Batch,)
-T_samples = tf.constant([[float(T)] for _ in range(B)]) 
+def make_dataset(populations, n_x, sample_size, batch_size, seed=(3, 4)):
+    count, dimension = tf.shape(populations)[0], tf.shape(populations)[1]
+    noise = tf.random.stateless_normal(
+        tf.stack([count, sample_size, dimension]), seed
+    )
+    returns = tf.matmul(noise, tf.linalg.cholesky(populations), transpose_b=True)
+    returns -= tf.reduce_mean(returns, axis=1, keepdims=True)
+    returns /= tf.math.reduce_std(returns, axis=1, keepdims=True)
+    empirical = tf.matmul(returns, returns, transpose_a=True) / sample_size
+    inputs = {
+        "correlation_x": empirical[:, :n_x, :n_x],
+        "correlation_y": empirical[:, n_x:, n_x:],
+        "cross_correlation": empirical[:, :n_x, n_x:],
+        "sample_size": tf.fill([count], tf.cast(sample_size, tf.float32)),
+    }
+    targets = populations[:, :n_x, n_x:]
+    return tf.data.Dataset.from_tensor_slices((inputs, targets)).batch(batch_size)
 
-# Target Variable
-# In supervised learning, this would be the "true" cross-correlation.
-Cxy_target = tf.random.normal((B, N, M))
 
-model.fit([Cxx, Cyy, Cxy, T_samples], Cxy_target, epochs=1, batch_size=32)
+n_x, n_y = 6, 8
+dataset = make_dataset(
+    generate_populations(256, n_x + n_y),
+    n_x=n_x,
+    sample_size=64,
+    batch_size=32,
+)
+inputs = {
+    "correlation_x": tf.keras.Input((None, None), name="correlation_x"),
+    "correlation_y": tf.keras.Input((None, None), name="correlation_y"),
+    "cross_correlation": tf.keras.Input((None, None), name="cross_correlation"),
+    "sample_size": tf.keras.Input((), name="sample_size"),
+}
+model = tf.keras.Model(inputs, CrossRIEnetLayer()(inputs))
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4, clipnorm=1.0),
+    loss="mse",
+)
+model.fit(dataset, epochs=10)
 ```
 
-### Different Output Types
-You can configure the layer to return different components by passing a list of keys to `outputs`.
+Dense tensors in one call to `fit` have fixed `n_x` and `n_y`. Training across
+different matrix dimensions requires a `tf.data.Dataset` that yields batches
+with the corresponding dynamic `TensorSpec` objects. One batch must still
+contain matrices with a common shape.
 
-- `'Cxy'`: The reconstructed, denoised cross-correlation matrix.
-- `'Sxy'`: The vector of cleaned singular values.
+## Selecting outputs
+
+`output_type` accepts one output name, a sequence of names or `"all"`.
 
 ```python
-# Returns only the cleaned singular values
-layer_s = CrossRIEnetLayer(outputs=['Sxy']) # When creating the model use Sxy to receive the cleaned singular values instead the clean cross-correlation matrix Cxy
-s_tilde = layer_s([Cxx, Cyy, Cxy, T_samples])
+# One output name returns a tensor.
+cleaned = CrossRIEnetLayer(
+    output_type="cross_correlation",
+)(inputs)
+
+# A sequence returns a dictionary.
+outputs = CrossRIEnetLayer(
+    output_type=("cross_correlation", "spectral_coefficients"),
+)(inputs)
+cleaned = outputs["cross_correlation"]
+coefficients = outputs["spectral_coefficients"]
+
+# Intermediate quantities for inspection.
+spectral = CrossRIEnetLayer(
+    output_type=(
+        "empirical_singular_values",
+        "correction",
+        "left_singular_vectors",
+        "right_singular_vectors",
+        "projected_variance_x",
+        "projected_variance_y",
+    ),
+)(inputs)
 ```
+
+Stable outputs are:
+
+- `cross_correlation`;
+- `spectral_coefficients`.
+
+The remaining outputs expose internal quantities for diagnostics and research.
+With additive correction, spectral coefficients can be negative and are not
+strict mathematical singular values.
+
+## Correction modes
+
+```python
+additive = CrossRIEnetLayer(
+    correction_mode="additive",
+    additive_activation="linear",
+)
+
+bounded = CrossRIEnetLayer(
+    correction_mode="bounded_multiplicative",
+)
+
+positive = CrossRIEnetLayer(
+    correction_mode="positive_multiplicative",
+)
+```
+
+The corresponding definitions are:
+
+```text
+additive:
+    coefficient = empirical + activation(delta)
+
+bounded_multiplicative:
+    coefficient = empirical * sigmoid(delta)
+
+positive_multiplicative:
+    coefficient = empirical * softplus(delta)
+```
+
+## Feasibility diagnostics
+
+`feasibility_diagnostics` evaluates compatibility of a proposed
+cross-correlation with fixed marginal correlation matrices. It reports values;
+it does not modify or project the matrix.
+
+```python
+from crient.diagnostics import feasibility_diagnostics
+
+diagnostics = feasibility_diagnostics(
+    correlation_x,
+    correlation_y,
+    cleaned,
+)
+
+maximum_canonical_value = diagnostics["max_canonical_singular_value"]
+violation_count = diagnostics["violation_count"]
+```
+
+
+## Dtype and mixed precision
+
+The Keras dtype policy controls computation, variables and public outputs:
+
+| Policy | Spectral work dtype | Variables | Public output |
+| --- | --- | --- | --- |
+| `float64` | `float64` | `float64` | `float64` |
+| `float32` | `float32` | `float32` | `float32` |
+| `mixed_float16` | `float32` | `float32` | `float16` |
+| `mixed_bfloat16` | `float32` | `float32` | `bfloat16` |
+
+Passing float64 inputs does not override a float32 layer policy. Use
+`dtype="float64"` on the layer or select the global float64 policy when that
+precision is required.
+
 
 ## Requirements
-- Python >= 3.9, < 3.13
-- TensorFlow >= 2.10.0
-- Keras >= 3.0.0
-- NumPy >= 1.24.0, < 2
+
+- Python 3.10--3.12
+- TensorFlow 2.16.1--2.21
+- Keras 3
 
 ## Development
+
+Run the complete test suite from the repository root:
+
 ```bash
-git clone https://github.com/Efstratios7/CrossRIEnet.git
-cd CrossRIEnet
-pip install -e ".[dev]"
+pytest
 ```
 
-### Running Tests
-```bash
-pytest tests/test_crossrie.py -v
-```
+The suite covers public API validation, dynamic tracing, float32, float64,
+mixed precision, reconstruction, gradients, valid correlation blocks,
+non-degenerate equivariance, diagnostics and `.keras` serialization.
 
 ## Citation
 
-## Support
-For questions, issues, or contributions, please:
+Use `print_citation()` or the repository `CITATION.cff`:
 
-- Open an issue on [GitHub](https://github.com/Efstratios7/CrossRIEnet/issues)
-- Contact Efstratios Manolakis (<stratomanolaki@gmail.com>)
-- Contact Prof. Christian Bongiorno (<christian.bongiorno@centralesupelec.fr>)
+```python
+import crient
+
+crient.print_citation()
+```
+
+```bibtex
+@article{manolakis2026crossrienet,
+  title   = {Physics-Informed Singular-Value Learning for Cross-Covariances
+             Forecasting in Financial Markets},
+  author  = {Manolakis, Efstratios and Bongiorno, Christian and
+             Mantegna, Rosario N.},
+  year    = {2026},
+  eprint  = {2601.07687},
+  archivePrefix = {arXiv}
+}
+```
+
+## Support
+
+For questions, issues, or contributions,
+
+- Open an issue on [GitHub](https://github.com/bongiornoc/CrossRIE/issues)
+- Check the documentation
+- Contact Prof. Christian Bongiorno (<christian.bongiorno@centralesupelec.fr>) for calibrated model weights or collaboration requests
+
+

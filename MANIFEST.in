@@ -1,0 +1,4 @@
+include CHANGELOG.md
+include CITATION.cff
+include environment.yml
+recursive-include docs *.py *.rst
