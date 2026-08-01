@@ -57,7 +57,7 @@ class CrossRIEnetLayer(keras.layers.Layer):
 
     The layer implements equations 1--7 of arXiv:2601.07687.  It receives two
     marginal correlation matrices, their empirical cross-correlation and a
-    positive observation count.  It completes both singular-vector bases,
+    positive sample size.  It completes both singular-vector bases,
     projects the marginal correlations, pads to ``max(n_x, n_y)``, encodes the
     two streams with shared weights, fuses them by summation and applies a
     recurrent point-wise spectral correction.
@@ -98,7 +98,7 @@ class CrossRIEnetLayer(keras.layers.Layer):
     Inputs are supplied as a four-element sequence or mapping:
     ``correlation_x`` has shape ``(batch, n_x, n_x)``, ``correlation_y`` has
     shape ``(batch, n_y, n_y)``, ``cross_correlation`` has shape
-    ``(batch, n_x, n_y)`` and ``n_observations`` has shape ``(batch,)`` or
+    ``(batch, n_x, n_y)`` and ``sample_size`` has shape ``(batch,)`` or
     ``(batch, 1)``.
 
     Padding tokens represent real marginal directions from the larger block
@@ -241,7 +241,7 @@ class CrossRIEnetLayer(keras.layers.Layer):
         super().build(input_shape)
 
     def call(self, inputs: Any, training: bool | None = None) -> Any:
-        """Apply the dimension-aware spectral cleaner.
+        """Apply the spectral cleaner.
 
         Parameters
         ----------
@@ -261,7 +261,7 @@ class CrossRIEnetLayer(keras.layers.Layer):
         TypeError
             If matrix dtypes or the input structure are invalid.
         ValueError
-            If ranks or the observation-count shape are invalid.
+            If ranks or the sample-size shape are invalid.
         tf.errors.InvalidArgumentError
             If runtime shapes, values or strict domain checks fail.
         """
@@ -269,7 +269,7 @@ class CrossRIEnetLayer(keras.layers.Layer):
             correlation_x,
             correlation_y,
             cross_correlation,
-            n_observations,
+            sample_size,
         ) = validate_basic_inputs(inputs, self.compute_dtype)
 
         if self.validation_mode == "strict":
@@ -294,8 +294,8 @@ class CrossRIEnetLayer(keras.layers.Layer):
 
         gamma_x = projected_x[..., None]
         gamma_y = projected_y[..., None]
-        q_x = tf.cast(n_x, self.compute_dtype) / n_observations
-        q_y = tf.cast(n_y, self.compute_dtype) / n_observations
+        q_x = tf.cast(n_x, self.compute_dtype) / sample_size
+        q_y = tf.cast(n_y, self.compute_dtype) / sample_size
         q_x = tf.ones_like(gamma_x) * q_x[:, None, None]
         q_y = tf.ones_like(gamma_y) * q_y[:, None, None]
         singular_tokens = empirical_s[..., None]

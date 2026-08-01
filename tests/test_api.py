@@ -9,14 +9,13 @@ import pytest
 import tensorflow as tf
 
 import crient
-from crient import CrossCovarianceRescalingLayer, CrossRIEnetLayer, custom_layers
+from crient import CrossRIEnetLayer, custom_layers
 from crient.typing import ALL_OUTPUTS
 
 
 def test_root_api_and_version():
     assert crient.__version__ == "0.2.0"
     assert crient.__all__ == [
-        "CrossCovarianceRescalingLayer",
         "CrossRIEnetLayer",
         "CrossRIEnetOutput",
         "__version__",
@@ -85,14 +84,14 @@ def test_sequence_and_mapping_inputs_match(valid_blocks):
             "correlation_x": valid_blocks[0],
             "correlation_y": valid_blocks[1],
             "cross_correlation": valid_blocks[2],
-            "n_observations": valid_blocks[3],
+            "sample_size": valid_blocks[3],
         },
         training=False,
     )
     np.testing.assert_allclose(mapping, sequence, atol=0, rtol=0)
 
 
-def test_n_observations_vector_and_column_match(valid_blocks):
+def test_sample_size_vector_and_column_match(valid_blocks):
     layer = CrossRIEnetLayer(
         encoder_layer_sizes=(3,),
         recurrent_layer_sizes=(3,),
@@ -105,17 +104,17 @@ def test_n_observations_vector_and_column_match(valid_blocks):
 
 
 @pytest.mark.parametrize(
-    "n_observations",
+    "sample_size",
     [tf.constant(10.0), tf.ones((2, 2)), tf.constant([10.0, 0.0])],
 )
-def test_invalid_n_observations_are_rejected(valid_blocks, n_observations):
+def test_invalid_sample_size_is_rejected(valid_blocks, sample_size):
     layer = CrossRIEnetLayer(
         encoder_layer_sizes=(3,),
         recurrent_layer_sizes=(3,),
         head_layer_sizes=(2,),
     )
     with pytest.raises((ValueError, tf.errors.InvalidArgumentError)):
-        layer((*valid_blocks[:3], n_observations))
+        layer((*valid_blocks[:3], sample_size))
 
 
 def test_integer_matrices_are_rejected(valid_blocks):
@@ -188,15 +187,6 @@ def test_strict_validation_rejects_infeasible_full_block():
         match="positive semidefinite",
     ):
         layer(inputs)
-
-
-def test_rescaling_layer():
-    correlation = tf.constant([[[1.0, 0.5], [-0.25, 1.0]]])
-    std_x = tf.constant([[2.0, 4.0]])
-    std_y = tf.constant([[3.0, 5.0]])
-    result = CrossCovarianceRescalingLayer()([correlation, std_x, std_y])
-    expected = np.array([[[6.0, 5.0], [-3.0, 20.0]]])
-    np.testing.assert_allclose(result, expected)
 
 
 def test_default_parameter_count_matches_paper(valid_blocks):

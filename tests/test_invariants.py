@@ -34,7 +34,7 @@ def test_permutation_equivariance_for_distinct_spectrum():
         batch=1,
         n_x=3,
         n_y=4,
-        n_observations=64,
+        sample_size=64,
         dtype=tf.float64,
         seed=19,
     )
@@ -74,7 +74,7 @@ def test_xy_swap_symmetry_for_distinct_spectrum():
         batch=1,
         n_x=3,
         n_y=4,
-        n_observations=64,
+        sample_size=64,
         dtype=tf.float64,
         seed=23,
     )

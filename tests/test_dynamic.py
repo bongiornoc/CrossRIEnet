@@ -5,6 +5,7 @@ from __future__ import annotations
 import tensorflow as tf
 
 from crient import CrossRIEnetLayer
+from crient.spectral import svd_via_eigh_full
 
 
 def _inputs(batch, n_x, n_y, value):
@@ -17,6 +18,12 @@ def _inputs(batch, n_x, n_y, value):
 
 
 def test_one_signature_handles_tall_wide_square_and_variable_batch():
+    # Exercise the helper's broader leading-batch contract first.  TensorFlow's
+    # reduce_retracing cache can otherwise make this test order-dependent by
+    # generalizing the helper outputs to an unknown static rank.
+    svd_via_eigh_full(tf.ones((1, 2, 3), tf.float32))
+    svd_via_eigh_full(tf.ones((1, 1, 2, 3), tf.float32))
+
     layer = CrossRIEnetLayer(
         encoder_layer_sizes=(3,),
         recurrent_layer_sizes=(3,),
@@ -32,9 +39,9 @@ def test_one_signature_handles_tall_wide_square_and_variable_batch():
         ],
         reduce_retracing=True,
     )
-    def apply(correlation_x, correlation_y, cross_correlation, n_observations):
+    def apply(correlation_x, correlation_y, cross_correlation, sample_size):
         return layer(
-            [correlation_x, correlation_y, cross_correlation, n_observations],
+            [correlation_x, correlation_y, cross_correlation, sample_size],
             training=False,
         )
 

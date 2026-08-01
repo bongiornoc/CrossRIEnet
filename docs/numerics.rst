@@ -18,6 +18,6 @@ Exact cases and invalid domains
 -------------------------------
 
 An exactly zero matrix is divided by a safe scale of one.  Nonzero matrices are
-not perturbed.  Observation counts must be strictly positive and are used
-without epsilon.  CRIENT does not silently add jitter, clip coefficients,
-apply absolute values, use pseudoinverses or project feasibility.
+not perturbed.  ``sample_size`` must be strictly positive and is used without
+epsilon.  CRIENT does not silently add jitter, clip coefficients, apply
+absolute values, use pseudoinverses or project feasibility.

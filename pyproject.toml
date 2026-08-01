@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "crient"
 version = "0.2.0"
-description = "Dimension-aware neural cleaning of rectangular cross-correlations"
+description = "Neural cleaning of rectangular cross-correlations"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
 license = "MIT"

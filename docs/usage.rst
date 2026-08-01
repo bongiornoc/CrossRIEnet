@@ -13,7 +13,7 @@ The canonical import is:
 
 Inputs can be passed as a four-element sequence or as a mapping with the keys
 ``correlation_x``, ``correlation_y``, ``cross_correlation`` and
-``n_observations``.
+``sample_size``.
 
 Output selection
 ----------------

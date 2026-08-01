@@ -12,6 +12,7 @@ All notable changes are documented in this file.
 - Add Keras dtype-policy support and float32 spectral work under mixed
   precision.
 - Add structural and optional strict domain validation.
-- Add feasibility diagnostics and correlation-to-covariance rescaling.
+- Add feasibility diagnostics.
+- Name the public sample-count input `sample_size`.
 - Align token channel order with equation 4 of arXiv:2601.07687v3.
 - Drop all `crossrie` compatibility aliases and checkpoint migration support.

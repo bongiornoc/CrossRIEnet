@@ -1,7 +1,6 @@
-"""CRIENT: dimension-aware cleaning of rectangular cross-correlations."""
+"""CRIENT: neural cleaning of rectangular cross-correlations."""
 
 from .layer import CrossRIEnetLayer
-from .ops_layers import CrossCovarianceRescalingLayer
 from .typing import CrossRIEnetOutput
 from .version import __version__
 
@@ -24,7 +23,6 @@ https://github.com/Efstratios7/CrossRIE
 
 
 __all__ = [
-    "CrossCovarianceRescalingLayer",
     "CrossRIEnetLayer",
     "CrossRIEnetOutput",
     "__version__",

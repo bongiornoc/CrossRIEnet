@@ -20,7 +20,7 @@ def test_model_keras_roundtrip_preserves_outputs(tmp_path, output_type):
     input_x = tf.keras.Input(shape=(None, None), name="correlation_x")
     input_y = tf.keras.Input(shape=(None, None), name="correlation_y")
     input_xy = tf.keras.Input(shape=(None, None), name="cross_correlation")
-    input_t = tf.keras.Input(shape=(), name="n_observations")
+    input_t = tf.keras.Input(shape=(), name="sample_size")
     output = CrossRIEnetLayer(
         encoder_layer_sizes=(3,),
         recurrent_layer_sizes=(3,),

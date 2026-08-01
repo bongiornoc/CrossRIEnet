@@ -259,9 +259,20 @@ class SpectralSVDLayer(keras.layers.Layer):
             rank_rtol=self.rank_rtol,
             rank_atol=self.rank_atol,
         )
-        return tuple(
+        singular_values, left_vectors, right_vectors = tuple(
             restore_compute_dtype(output, self.compute_dtype) for output in outputs
         )
+
+        # ``svd_via_eigh_full`` also supports arbitrary leading batch
+        # dimensions.  After TensorFlow has traced both rank-3 and higher-rank
+        # calls, reduce_retracing may therefore generalize its cached output to
+        # an unknown rank.  This layer's public contract is rank 3, so restore
+        # that static rank before Keras performs input-shape inspection in the
+        # downstream projection layers.
+        singular_values = tf.ensure_shape(singular_values, (None, None))
+        left_vectors = tf.ensure_shape(left_vectors, (None, None, None))
+        right_vectors = tf.ensure_shape(right_vectors, (None, None, None))
+        return singular_values, left_vectors, right_vectors
 
     def get_config(self):
         """Return the serializable dtype and rank-policy configuration."""

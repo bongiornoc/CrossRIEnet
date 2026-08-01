@@ -51,9 +51,9 @@ def dynamic_matrix_generator(
 
         Cxy_clean = zX @ zY.transpose(0, 2, 1) / ndays
         Cxy_noisy = zX_sample @ zY_sample.transpose(0, 2, 1) / ndays
-        T_samples = tf.constant([float(ndays)] * batch_size)
+        sample_size = tf.constant([float(ndays)] * batch_size)
 
-        yield (Cxx, Cyy, Cxy_noisy, T_samples), Cxy_clean
+        yield (Cxx, Cyy, Cxy_noisy, sample_size), Cxy_clean
 
 
 def get_dynamic_dataset(
@@ -67,7 +67,7 @@ def get_dynamic_dataset(
                 tf.TensorSpec(shape=(None, None, None), dtype=tf.float32),  # Cxx
                 tf.TensorSpec(shape=(None, None, None), dtype=tf.float32),  # Cyy
                 tf.TensorSpec(shape=(None, None, None), dtype=tf.float32),  # Cxy_noisy
-                tf.TensorSpec(shape=(None,), dtype=tf.float32),  # T_samples
+                tf.TensorSpec(shape=(None,), dtype=tf.float32),  # sample_size
             ),
             tf.TensorSpec(shape=(None, None, None), dtype=tf.float32),  # Cxy_clean
         ),

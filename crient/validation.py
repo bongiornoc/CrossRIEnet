@@ -10,7 +10,7 @@ INPUT_NAMES = (
     "correlation_x",
     "correlation_y",
     "cross_correlation",
-    "n_observations",
+    "sample_size",
 )
 
 
@@ -43,13 +43,13 @@ def _require_floating(name: str, tensor: tf.Tensor):
 
 def validate_basic_inputs(inputs, compute_dtype):
     """Validate and canonicalize the public main-layer input contract."""
-    correlation_x, correlation_y, cross_correlation, n_observations = unpack_inputs(
+    correlation_x, correlation_y, cross_correlation, sample_size = unpack_inputs(
         inputs
     )
     correlation_x = tf.convert_to_tensor(correlation_x)
     correlation_y = tf.convert_to_tensor(correlation_y)
     cross_correlation = tf.convert_to_tensor(cross_correlation)
-    n_observations = tf.convert_to_tensor(n_observations)
+    sample_size = tf.convert_to_tensor(sample_size)
 
     for name, matrix in (
         ("correlation_x", correlation_x),
@@ -65,19 +65,19 @@ def validate_basic_inputs(inputs, compute_dtype):
             f"{name} must contain only finite values",
         )
 
-    if not (n_observations.dtype.is_integer or n_observations.dtype.is_floating):
-        raise TypeError("n_observations must have an integer or floating dtype")
-    if n_observations.shape.rank == 2:
-        if n_observations.shape[-1] is not None and n_observations.shape[-1] != 1:
-            raise ValueError("n_observations rank-2 form must have shape (batch, 1)")
+    if not (sample_size.dtype.is_integer or sample_size.dtype.is_floating):
+        raise TypeError("sample_size must have an integer or floating dtype")
+    if sample_size.shape.rank == 2:
+        if sample_size.shape[-1] is not None and sample_size.shape[-1] != 1:
+            raise ValueError("sample_size rank-2 form must have shape (batch, 1)")
         tf.debugging.assert_equal(
-            tf.shape(n_observations)[1],
+            tf.shape(sample_size)[1],
             1,
-            message="n_observations rank-2 form must have shape (batch, 1)",
+            message="sample_size rank-2 form must have shape (batch, 1)",
         )
-        n_observations = tf.squeeze(n_observations, axis=-1)
-    elif n_observations.shape.rank != 1:
-        raise ValueError("n_observations must have shape (batch,) or (batch, 1)")
+        sample_size = tf.squeeze(sample_size, axis=-1)
+    elif sample_size.shape.rank != 1:
+        raise ValueError("sample_size must have shape (batch,) or (batch, 1)")
 
     batch = tf.shape(cross_correlation)[0]
     n_x = tf.shape(cross_correlation)[1]
@@ -94,9 +94,9 @@ def validate_basic_inputs(inputs, compute_dtype):
             message="correlation_y batch dimension must match cross_correlation",
         ),
         tf.debugging.assert_equal(
-            tf.shape(n_observations)[0],
+            tf.shape(sample_size)[0],
             batch,
-            message="n_observations batch dimension must match the matrices",
+            message="sample_size batch dimension must match the matrices",
         ),
         tf.debugging.assert_equal(
             tf.shape(correlation_x)[1],
@@ -119,8 +119,8 @@ def validate_basic_inputs(inputs, compute_dtype):
             message="correlation_y size must match cross_correlation columns",
         ),
         tf.debugging.assert_positive(
-            n_observations,
-            message="n_observations must be strictly positive",
+            sample_size,
+            message="sample_size must be strictly positive",
         ),
     )
     with tf.control_dependencies(assertions):
@@ -129,7 +129,7 @@ def validate_basic_inputs(inputs, compute_dtype):
             tf.cast(tf.identity(correlation_x), dtype),
             tf.cast(tf.identity(correlation_y), dtype),
             tf.cast(tf.identity(cross_correlation), dtype),
-            tf.cast(tf.identity(n_observations), dtype),
+            tf.cast(tf.identity(sample_size), dtype),
         )
 
 

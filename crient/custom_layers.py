@@ -5,7 +5,6 @@ namespace within the canonical :mod:`crient` package, not a legacy shim.
 """
 
 from .ops_layers import (
-    CrossCovarianceRescalingLayer,
     ProjectedVarianceDiagonalLayer,
     SequencePaddingLayer,
     SVDReconstructionLayer,
@@ -18,7 +17,6 @@ from .trainable_layers import (
 )
 
 __all__ = [
-    "CrossCovarianceRescalingLayer",
     "DeepLayer",
     "DeepRecurrentLayer",
     "ProjectedVarianceDiagonalLayer",

@@ -7,9 +7,6 @@ Stable package API
 .. autoclass:: crient.CrossRIEnetLayer
    :members: call, get_config
 
-.. autoclass:: crient.CrossCovarianceRescalingLayer
-   :members: call
-
 .. autofunction:: crient.print_citation
 
 Advanced spectral API
