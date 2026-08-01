@@ -1,4 +1,4 @@
-# CRIENT: CrossRIEnet for Rectangular Cross-Correlation Cleaning
+# CRIENet: CrossRIEnet for Rectangular Cross-Correlation Cleaning
 
 [![Python >=3.10](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -9,7 +9,7 @@
   Physics-Informed Singular-Value Learning for Cross-Covariances Forecasting
   in Financial Markets. [arXiv:2601.07687v3](https://arxiv.org/abs/2601.07687).**
 
-CRIENT is a TensorFlow/Keras research implementation for cleaning rectangular
+CRIENet is a TensorFlow/Keras research implementation for cleaning rectangular
 cross-correlation matrices. Given two marginal correlation matrices, their
 empirical cross-correlation and the corresponding sample size, the model
 learns corrections to the empirical spectral coefficients and reconstructs a
@@ -29,7 +29,7 @@ corrections to square covariance and correlation matrices through an
 eigendecomposition. CrossRIEnet applies a related construction to rectangular
 cross-correlation matrices through a singular-value decomposition.
 
-CRIENT is currently an independent package. It does not import RIEnet or rely
+CRIENet is currently an independent package. It does not import RIEnet or rely
 on RIEnet private symbols. Matrix outputs from the two packages can be composed
 in an external workflow when marginal covariance or precision estimates are
 also required.
@@ -47,21 +47,21 @@ also required.
 
 ## Module organization
 
-- `crient.layer`: the public `CrossRIEnetLayer`.
-- `crient.trainable_layers`: the shared encoder, recurrent aggregator and
+- `crienet.layer`: the public `CrossRIEnetLayer`.
+- `crienet.trainable_layers`: the shared encoder, recurrent aggregator and
   correction head.
-- `crient.ops_layers`: deterministic projection, padding and reconstruction
+- `crienet.ops_layers`: deterministic projection, padding and reconstruction
   layers.
-- `crient.spectral`: the full-basis spectral backend.
-- `crient.validation`: input and correlation-domain validation.
-- `crient.diagnostics`: non-mutating feasibility diagnostics.
+- `crienet.spectral`: the full-basis spectral backend.
+- `crienet.validation`: input and correlation-domain validation.
+- `crienet.diagnostics`: non-mutating feasibility diagnostics.
 
 ## Installation
 
 Install from PyPI:
 
 ```bash
-python -m pip install crient
+python -m pip install crienet
 ```
 
 Or install from source:
@@ -83,7 +83,7 @@ The supplied Conda environment can be created with:
 
 ```bash
 conda env update --file environment.yml --prune
-conda activate crient_env
+conda activate crienet_env
 python -m pip install -e ".[dev]"
 ```
 
@@ -96,7 +96,7 @@ belong to one valid correlation block.
 ```python
 import tensorflow as tf
 
-from crient import CrossRIEnetLayer
+from crienet import CrossRIEnetLayer
 
 
 def correlation_blocks(returns, n_x):
@@ -177,7 +177,7 @@ the `Model.fit` interface, not the training protocol used in the paper.
 ```python
 import tensorflow as tf
 
-from crient import CrossRIEnetLayer
+from crienet import CrossRIEnetLayer
 
 
 def generate_populations(count, dimension, seed=(1, 2)):
@@ -307,7 +307,7 @@ cross-correlation with fixed marginal correlation matrices. It reports values;
 it does not modify or project the matrix.
 
 ```python
-from crient.diagnostics import feasibility_diagnostics
+from crienet.diagnostics import feasibility_diagnostics
 
 diagnostics = feasibility_diagnostics(
     correlation_x,
@@ -334,6 +334,16 @@ The Keras dtype policy controls computation, variables and public outputs:
 Passing float64 inputs does not override a float32 layer policy. Use
 `dtype="float64"` on the layer or select the global float64 policy when that
 precision is required.
+
+Version 0.2 does not claim `jit_compile=True` support. With TensorFlow 2.20
+and Keras 3.12, Keras disables JIT on GPU for the cuDNN-backed recurrent
+layers, while CPU XLA compilation fails in the dynamic rectangular spectral
+branch. Standard `Model.fit` training works on CPU and GPU without JIT.
+
+The `mixed_bfloat16` row specifies the dtype contract, not unconditional
+gradient stability. An intermittent non-finite backward pass was observed on
+an NVIDIA RTX A2000 for some initialization histories; use `float32` when
+finite-gradient guarantees are required.
 
 
 ## Requirements
@@ -363,9 +373,9 @@ non-degenerate equivariance, diagnostics and `.keras` serialization.
 Use `print_citation()` or the repository `CITATION.cff`:
 
 ```python
-import crient
+import crienet
 
-crient.print_citation()
+crienet.print_citation()
 ```
 
 ```bibtex

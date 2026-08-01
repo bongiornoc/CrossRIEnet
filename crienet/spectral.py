@@ -1,4 +1,4 @@
-"""Spectral operations used by CRIENT.
+"""Spectral operations used by CRIENet.
 
 The current backend constructs Gram matrices and uses ``tf.linalg.eigh`` so
 that full left and right bases are available for rectangular inputs.  This
@@ -193,7 +193,7 @@ def svd_via_eigh_full(
     return singular_values, left_vectors, right_vectors
 
 
-@keras.saving.register_keras_serializable(package="crient")
+@keras.saving.register_keras_serializable(package="crienet")
 class SpectralSVDLayer(keras.layers.Layer):
     """Full rectangular SVD layer with an explicit dtype and rank policy.
 

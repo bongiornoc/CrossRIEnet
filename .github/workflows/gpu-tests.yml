@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install CRIENT
+      - name: Install CRIENet
         run: python -m pip install -e ".[dev]"
       - name: Verify GPU and run tests
         run: |

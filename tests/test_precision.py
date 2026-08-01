@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 import tensorflow as tf
 
-from crient import CrossRIEnetLayer
+from crienet import CrossRIEnetLayer
 
 
 def _inputs(dtype):
@@ -68,8 +68,15 @@ def test_forward_and_backward_are_finite(policy_name):
         gradients = tape.gradient(loss, layer.trainable_variables)
         assert gradients
         assert all(gradient is not None for gradient in gradients)
-        assert all(
-            bool(tf.reduce_all(tf.math.is_finite(gradient))) for gradient in gradients
-        )
+        non_finite = [
+            variable.path
+            for variable, gradient in zip(
+                layer.trainable_variables,
+                gradients,
+                strict=True,
+            )
+            if not bool(tf.reduce_all(tf.math.is_finite(gradient)))
+        ]
+        assert not non_finite, f"Non-finite gradients: {non_finite}"
     finally:
         tf.keras.mixed_precision.set_global_policy(previous)

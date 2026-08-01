@@ -4,7 +4,7 @@ All notable changes are documented in this file.
 
 ## 0.2.0 - 2026-08-01
 
-- Rename the Python package and distribution to `crient`.
+- Rename the Python package and distribution to `crienet`.
 - Replace the 0.1 API with `output_type` and descriptive output names.
 - Define the core domain as marginal correlations plus cross-correlation.
 - Add explicit additive, bounded-multiplicative and positive-multiplicative

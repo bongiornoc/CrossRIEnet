@@ -27,14 +27,14 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           cache: pip
-      - name: Install tested TensorFlow and CRIENT
+      - name: Install tested TensorFlow and CRIENet
         run: |
           python -m pip install --upgrade pip
           python -m pip install "tensorflow==${{ matrix.tensorflow }}" "keras>=3"
           python -m pip install --no-deps -e .
           python -m pip install pytest pytest-cov scipy
       - name: Run CPU tests
-        run: pytest --cov=crient --cov-report=term-missing
+        run: pytest --cov=crienet --cov-report=term-missing
 
   quality:
     runs-on: ubuntu-latest
@@ -61,6 +61,6 @@ jobs:
           python -m twine check dist/*
       - name: Installation smoke test
         run: |
-          python -m venv /tmp/crient-smoke
-          /tmp/crient-smoke/bin/python -m pip install dist/*.whl
-          /tmp/crient-smoke/bin/python -c "from crient import CrossRIEnetLayer; print(CrossRIEnetLayer)"
+          python -m venv /tmp/crienet-smoke
+          /tmp/crienet-smoke/bin/python -m pip install dist/*.whl
+          /tmp/crienet-smoke/bin/python -c "from crienet import CrossRIEnetLayer; print(CrossRIEnetLayer)"

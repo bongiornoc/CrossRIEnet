@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 import tensorflow as tf
 
-from crient.ops_layers import reconstruct_from_full_svd
-from crient.spectral import SpectralSVDLayer, svd_via_eigh_full
+from crienet.ops_layers import reconstruct_from_full_svd
+from crienet.spectral import SpectralSVDLayer, svd_via_eigh_full
 
 
 @pytest.mark.parametrize("shape", [(2, 4, 6), (2, 6, 4), (2, 5, 5)])

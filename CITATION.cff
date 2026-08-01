@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use CRIENT, please cite the paper and this software."
-title: "CRIENT: CrossRIEnet for rectangular cross-correlation cleaning"
+message: "If you use CRIENet, please cite the paper and this software."
+title: "CRIENet: CrossRIEnet for rectangular cross-correlation cleaning"
 type: software
 version: 0.2.0
 authors:

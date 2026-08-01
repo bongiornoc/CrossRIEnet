@@ -1,10 +1,10 @@
-"""Keras serialization tests for the canonical CRIENT API."""
+"""Keras serialization tests for the canonical CRIENet API."""
 
 import numpy as np
 import pytest
 import tensorflow as tf
 
-from crient import CrossRIEnetLayer
+from crienet import CrossRIEnetLayer
 
 
 @pytest.mark.parametrize(
@@ -39,7 +39,7 @@ def test_model_keras_roundtrip_preserves_outputs(tmp_path, output_type):
         tf.constant([10.0], dtype=tf.float32),
     ]
     before = model(inputs, training=False)
-    path = tmp_path / "crient_roundtrip.keras"
+    path = tmp_path / "crienet_roundtrip.keras"
     model.save(path)
     loaded = tf.keras.models.load_model(path)
     after = loaded(inputs, training=False)

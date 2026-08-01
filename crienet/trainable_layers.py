@@ -1,4 +1,4 @@
-"""Trainable building blocks for CRIENT."""
+"""Trainable building blocks for CRIENet."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ def _positive_sizes(name: str, values: Sequence[int], *, allow_empty: bool):
     return values
 
 
-@keras.saving.register_keras_serializable(package="crient")
+@keras.saving.register_keras_serializable(package="crienet")
 class DeepLayer(keras.layers.Layer):
     """Position-wise multilayer perceptron with explicit training propagation."""
 
@@ -115,7 +115,7 @@ class DeepLayer(keras.layers.Layer):
         }
 
 
-@keras.saving.register_keras_serializable(package="crient")
+@keras.saving.register_keras_serializable(package="crienet")
 class DeepRecurrentLayer(keras.layers.Layer):
     """Stacked recurrent aggregator followed by a point-wise output head."""
 
@@ -213,7 +213,7 @@ class DeepRecurrentLayer(keras.layers.Layer):
         }
 
 
-@keras.saving.register_keras_serializable(package="crient")
+@keras.saving.register_keras_serializable(package="crienet")
 class TwoStreamEncoderLayer(keras.layers.Layer):
     """Apply a shared encoder, sum fusion and recurrent spectral aggregator.
 

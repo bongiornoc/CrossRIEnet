@@ -1,4 +1,4 @@
-"""Public typing helpers for CRIENT."""
+"""Public typing helpers for CRIENet."""
 
 from __future__ import annotations
 

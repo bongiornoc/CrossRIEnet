@@ -1,7 +1,7 @@
 """Advanced layer imports.
 
 Prefer the focused modules for new code.  This module is a convenience
-namespace within the canonical :mod:`crient` package, not a legacy shim.
+namespace within the canonical :mod:`crienet` package, not a legacy shim.
 """
 
 from .ops_layers import (

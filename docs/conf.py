@@ -1,4 +1,4 @@
-"""Sphinx configuration for CRIENT."""
+"""Sphinx configuration for CRIENet."""
 
 from __future__ import annotations
 
@@ -7,9 +7,9 @@ import sys
 
 sys.path.insert(0, os.path.abspath(".."))
 
-project = "CRIENT"
+project = "CRIENet"
 author = "Efstratios Manolakis, Christian Bongiorno, Rosario N. Mantegna"
-copyright = "2026, CRIENT authors"
+copyright = "2026, CRIENet authors"
 release = "0.2.0"
 
 extensions = [

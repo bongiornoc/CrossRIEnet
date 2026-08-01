@@ -1,4 +1,4 @@
-"""Deterministic tensor operations and Keras wrappers for CRIENT."""
+"""Deterministic tensor operations and Keras wrappers for CRIENet."""
 
 from __future__ import annotations
 
@@ -53,7 +53,7 @@ def reconstruct_from_full_svd(
     return tf.matmul(left, scaled_right)
 
 
-@keras.saving.register_keras_serializable(package="crient")
+@keras.saving.register_keras_serializable(package="crienet")
 class ProjectedVarianceDiagonalLayer(keras.layers.Layer):
     """Compute a marginal variance diagonal in a supplied spectral basis."""
 
@@ -62,7 +62,7 @@ class ProjectedVarianceDiagonalLayer(keras.layers.Layer):
         return projected_variance_diagonal(correlation, basis)
 
 
-@keras.saving.register_keras_serializable(package="crient")
+@keras.saving.register_keras_serializable(package="crienet")
 class SequencePaddingLayer(keras.layers.Layer):
     """Right-pad a rank-3 sequence to a supplied scalar length."""
 
@@ -71,7 +71,7 @@ class SequencePaddingLayer(keras.layers.Layer):
         return pad_sequence_to(sequence, target_length)
 
 
-@keras.saving.register_keras_serializable(package="crient")
+@keras.saving.register_keras_serializable(package="crienet")
 class SVDReconstructionLayer(keras.layers.Layer):
     """Reconstruct a matrix from signed spectral coefficients and full bases."""
 

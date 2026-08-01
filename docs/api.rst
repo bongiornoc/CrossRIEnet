@@ -4,20 +4,20 @@ API reference
 Stable package API
 ------------------
 
-.. autoclass:: crient.CrossRIEnetLayer
+.. autoclass:: crienet.CrossRIEnetLayer
    :members: call, get_config
 
-.. autofunction:: crient.print_citation
+.. autofunction:: crienet.print_citation
 
 Advanced spectral API
 ---------------------
 
-.. autoclass:: crient.spectral.SpectralSVDLayer
+.. autoclass:: crienet.spectral.SpectralSVDLayer
    :members: call, get_config
 
-.. autofunction:: crient.spectral.svd_via_eigh_full
+.. autofunction:: crienet.spectral.svd_via_eigh_full
 
-.. autofunction:: crient.diagnostics.feasibility_diagnostics
+.. autofunction:: crienet.diagnostics.feasibility_diagnostics
 
-.. autoclass:: crient.trainable_layers.TwoStreamEncoderLayer
+.. autoclass:: crienet.trainable_layers.TwoStreamEncoderLayer
    :members: call, get_config

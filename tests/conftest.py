@@ -20,10 +20,12 @@ def make_valid_blocks(
         dtype=dtype,
     )
     returns -= tf.reduce_mean(returns, axis=1, keepdims=True)
-    scale = tf.math.reduce_std(returns, axis=1, keepdims=True)
-    standardized = returns / scale
-    full = tf.matmul(standardized, standardized, transpose_a=True)
-    full /= tf.cast(sample_size, dtype)
+    covariance = tf.matmul(returns, returns, transpose_a=True)
+    covariance /= tf.cast(sample_size, dtype)
+    scale = tf.sqrt(tf.linalg.diag_part(covariance))
+    full = covariance / scale[..., :, None] / scale[..., None, :]
+    full = 0.5 * (full + tf.linalg.matrix_transpose(full))
+    full = tf.linalg.set_diag(full, tf.ones_like(scale))
     return (
         full[:, :n_x, :n_x],
         full[:, n_x:, n_x:],

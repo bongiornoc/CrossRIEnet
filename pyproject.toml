@@ -3,7 +3,7 @@ requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "crient"
+name = "crienet"
 version = "0.2.0"
 description = "Neural cleaning of rectangular cross-correlations"
 readme = "README.md"
@@ -59,7 +59,7 @@ dev = [
 "Source" = "https://github.com/bongiornoc/CrossRIEnet"
 
 [tool.setuptools.packages.find]
-include = ["crient*"]
+include = ["crienet*"]
 
 [tool.pytest.ini_options]
 addopts = "-ra"
@@ -74,7 +74,7 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.mypy]
 python_version = "3.10"
-packages = ["crient"]
+packages = ["crienet"]
 ignore_missing_imports = true
 check_untyped_defs = true
 warn_unused_ignores = true

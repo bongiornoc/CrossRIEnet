@@ -13,14 +13,14 @@ def _run(*command: str) -> None:
 
 
 def main() -> None:
-    """Create/update ``crient_env`` and install the local checkout.
+    """Create/update ``crienet_env`` and install the local checkout.
 
     This wrapper is retained for the 0.2 development cycle only.  Prefer the
     commands documented in README.md.
     """
     warnings.warn(
         "setup_env.py is deprecated; use `conda env update -f environment.yml "
-        "--prune` followed by `conda run -n crient_env python -m pip install "
+        "--prune` followed by `conda run -n crienet_env python -m pip install "
         "-e .`.",
         FutureWarning,
         stacklevel=2,
@@ -34,7 +34,7 @@ def main() -> None:
         conda,
         "run",
         "--name",
-        "crient_env",
+        "crienet_env",
         "python",
         "-m",
         "pip",
@@ -46,14 +46,14 @@ def main() -> None:
         conda,
         "run",
         "--name",
-        "crient_env",
+        "crienet_env",
         "python",
         "-m",
         "ipykernel",
         "install",
         "--user",
-        "--name=crient_env",
-        "--display-name=Python (crient_env)",
+        "--name=crienet_env",
+        "--display-name=Python (crienet_env)",
     )
 
 

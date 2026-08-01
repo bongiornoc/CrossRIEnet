@@ -1,7 +1,7 @@
-CRIENT documentation
-====================
+CRIENet documentation
+=====================
 
-CRIENT is the Python distribution of CrossRIEnet.  Its core operates on
+CRIENet is the Python distribution of CrossRIEnet.  Its core operates on
 marginal correlations and a rectangular cross-correlation.
 
 .. toctree::

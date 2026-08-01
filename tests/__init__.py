@@ -1,1 +1,1 @@
-"""CRIENT test suite."""
+"""CRIENet test suite."""

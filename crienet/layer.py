@@ -51,7 +51,7 @@ def _normalize_output_type(output_type):
     return components, False, requested
 
 
-@keras.saving.register_keras_serializable(package="crient")
+@keras.saving.register_keras_serializable(package="crienet")
 class CrossRIEnetLayer(keras.layers.Layer):
     """Clean a rectangular cross-correlation in its empirical SVD basis.
 
@@ -366,5 +366,5 @@ class CrossRIEnetLayer(keras.layers.Layer):
 
     @classmethod
     def from_config(cls, config: dict[str, Any]) -> CrossRIEnetLayer:
-        """Construct a layer from a canonical CRIENT configuration."""
+        """Construct a layer from a canonical CRIENet configuration."""
         return cls(**config)

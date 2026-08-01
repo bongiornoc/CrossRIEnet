@@ -1,4 +1,4 @@
-name: crient_env
+name: crienet_env
 channels:
   - defaults
 dependencies:

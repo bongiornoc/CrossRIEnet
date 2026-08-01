@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 import tensorflow as tf
 
-from crient import CrossRIEnetLayer
-from crient.trainable_layers import TwoStreamEncoderLayer
+from crienet import CrossRIEnetLayer
+from crienet.trainable_layers import TwoStreamEncoderLayer
 from tests.conftest import make_valid_blocks
 
 

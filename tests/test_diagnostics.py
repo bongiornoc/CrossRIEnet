@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import tensorflow as tf
 
-from crient.diagnostics import feasibility_diagnostics
+from crienet.diagnostics import feasibility_diagnostics
 
 
 def test_valid_block_is_reported_feasible(valid_blocks):

@@ -1,4 +1,4 @@
-"""Input and scientific-domain validation for CRIENT."""
+"""Input and scientific-domain validation for CRIENet."""
 
 from __future__ import annotations
 

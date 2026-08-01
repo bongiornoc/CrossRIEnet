@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import inspect
 
-from crient import CrossRIEnetLayer
-from crient.diagnostics import feasibility_diagnostics
-from crient.spectral import SpectralSVDLayer, svd_via_eigh_full
+from crienet import CrossRIEnetLayer
+from crienet.diagnostics import feasibility_diagnostics
+from crienet.spectral import SpectralSVDLayer, svd_via_eigh_full
 
 
 def test_public_docstrings_are_present_and_describe_core_contracts():

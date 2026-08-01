@@ -8,24 +8,25 @@ import numpy as np
 import pytest
 import tensorflow as tf
 
-import crient
-from crient import CrossRIEnetLayer, custom_layers
-from crient.typing import ALL_OUTPUTS
+import crienet
+from crienet import CrossRIEnetLayer, custom_layers
+from crienet.typing import ALL_OUTPUTS
 
 
 def test_root_api_and_version():
-    assert crient.__version__ == "0.2.0"
-    assert crient.__all__ == [
+    assert crienet.__version__ == "0.2.0"
+    assert crienet.__all__ == [
         "CrossRIEnetLayer",
         "CrossRIEnetOutput",
         "__version__",
         "print_citation",
     ]
-    assert custom_layers.SpectralSVDLayer.__module__ == "crient.spectral"
+    assert custom_layers.SpectralSVDLayer.__module__ == "crienet.spectral"
 
 
-def test_removed_crossrie_package_is_not_importable():
+def test_removed_package_names_are_not_importable():
     assert importlib.util.find_spec("crossrie") is None
+    assert importlib.util.find_spec("crient") is None
 
 
 def test_single_sequence_and_all_outputs(valid_blocks):

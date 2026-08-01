@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import tensorflow as tf
 
-from crient import CrossRIEnetLayer
-from crient.spectral import svd_via_eigh_full
+from crienet import CrossRIEnetLayer
+from crienet.spectral import svd_via_eigh_full
 
 
 def _inputs(batch, n_x, n_y, value):

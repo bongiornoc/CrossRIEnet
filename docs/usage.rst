@@ -5,7 +5,7 @@ The canonical import is:
 
 .. code-block:: python
 
-   from crient import CrossRIEnetLayer
+   from crienet import CrossRIEnetLayer
 
    layer = CrossRIEnetLayer(
        output_type=("cross_correlation", "spectral_coefficients"),
