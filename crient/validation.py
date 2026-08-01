@@ -43,9 +43,7 @@ def _require_floating(name: str, tensor: tf.Tensor):
 
 def validate_basic_inputs(inputs, compute_dtype):
     """Validate and canonicalize the public main-layer input contract."""
-    correlation_x, correlation_y, cross_correlation, sample_size = unpack_inputs(
-        inputs
-    )
+    correlation_x, correlation_y, cross_correlation, sample_size = unpack_inputs(inputs)
     correlation_x = tf.convert_to_tensor(correlation_x)
     correlation_y = tf.convert_to_tensor(correlation_y)
     cross_correlation = tf.convert_to_tensor(cross_correlation)

@@ -184,9 +184,7 @@ def generate_populations(count, dimension, seed=(1, 2)):
 
 def make_dataset(populations, n_x, sample_size, batch_size, seed=(3, 4)):
     count, dimension = tf.shape(populations)[0], tf.shape(populations)[1]
-    noise = tf.random.stateless_normal(
-        tf.stack([count, sample_size, dimension]), seed
-    )
+    noise = tf.random.stateless_normal(tf.stack([count, sample_size, dimension]), seed)
     returns = tf.matmul(noise, tf.linalg.cholesky(populations), transpose_b=True)
     returns -= tf.reduce_mean(returns, axis=1, keepdims=True)
     returns /= tf.math.reduce_std(returns, axis=1, keepdims=True)
