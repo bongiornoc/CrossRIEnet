@@ -376,6 +376,6 @@ For questions, issues, or contributions,
 
 - Open an issue on [GitHub](https://github.com/bongiornoc/CrossRIE/issues)
 - Check the documentation
+- Contact Efstratios Manolakis (<stratomanolaki@gmail.com>)
 - Contact Prof. Christian Bongiorno (<christian.bongiorno@centralesupelec.fr>) for calibrated model weights or collaboration requests
-
 
