@@ -10,7 +10,7 @@ authors:
     given-names: Christian
   - family-names: Mantegna
     given-names: Rosario N.
-repository-code: "https://github.com/Efstratios7/CrossRIE"
+repository-code: "https://github.com/bongiornoc/CrossRIEnet"
 license: MIT
 preferred-citation:
   type: article

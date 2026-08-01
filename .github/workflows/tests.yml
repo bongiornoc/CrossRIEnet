@@ -30,7 +30,7 @@ jobs:
       - name: Install tested TensorFlow and CRIENT
         run: |
           python -m pip install --upgrade pip
-          python -m pip install "tensorflow==${{ matrix.tensorflow }}" "keras>=3,<4"
+          python -m pip install "tensorflow==${{ matrix.tensorflow }}" "keras>=3"
           python -m pip install --no-deps -e .
           python -m pip install pytest pytest-cov scipy
       - name: Run CPU tests

@@ -2,10 +2,10 @@ name: crient_env
 channels:
   - defaults
 dependencies:
-  - python>=3.10,<3.13
+  - python>=3.10
   - pip
   - ipykernel
   - pip:
-    - "tensorflow>=2.16.1,<2.22"
-    - "keras>=3.0,<4"
+    - "tensorflow>=2.16.1"
+    - "keras>=3.0"
     - scipy>=1.10.0

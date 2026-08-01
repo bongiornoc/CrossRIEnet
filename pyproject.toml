@@ -7,7 +7,7 @@ name = "crient"
 version = "0.2.0"
 description = "Neural cleaning of rectangular cross-correlations"
 readme = "README.md"
-requires-python = ">=3.10,<3.13"
+requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE", "NOTICE"]
 authors = [
@@ -34,8 +34,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "tensorflow>=2.16.1,<2.22",
-    "keras>=3.0,<4",
+    "tensorflow>=2.16.1",
+    "keras>=3.0",
 ]
 
 [project.optional-dependencies]
@@ -53,10 +53,10 @@ dev = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/Efstratios7/CrossRIE"
-"Documentation" = "https://github.com/Efstratios7/CrossRIE/tree/main/docs"
-"Bug Tracker" = "https://github.com/Efstratios7/CrossRIE/issues"
-"Source" = "https://github.com/Efstratios7/CrossRIE"
+"Homepage" = "https://github.com/bongiornoc/CrossRIEnet"
+"Documentation" = "https://github.com/bongiornoc/CrossRIEnet/tree/main/docs"
+"Bug Tracker" = "https://github.com/bongiornoc/CrossRIEnet/issues"
+"Source" = "https://github.com/bongiornoc/CrossRIEnet"
 
 [tool.setuptools.packages.find]
 include = ["crient*"]

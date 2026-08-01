@@ -1,6 +1,6 @@
 # CRIENT: CrossRIEnet for Rectangular Cross-Correlation Cleaning
 
-[![Python 3.10--3.12](https://img.shields.io/badge/python-3.10--3.12-blue.svg)](https://www.python.org/downloads/)
+[![Python >=3.10](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **This library implements the neural estimator introduced in:**
@@ -19,8 +19,8 @@ The package operates on correlation matrices. Estimation of marginal
 volatilities, conversion to cross-covariances and preprocessing of raw returns
 are outside the core API.
 
-Version 0.2 is an unreleased API revision. It does not provide compatibility
-aliases for the earlier `crossrie` package.
+Version 0.2 does not provide compatibility aliases for the earlier `crossrie`
+package.
 
 ## Relationship to RIEnet
 
@@ -58,11 +58,17 @@ also required.
 
 ## Installation
 
-CRIENT has not been published to PyPI. Install it from a local checkout:
+Install from PyPI:
 
 ```bash
-git clone https://github.com/Efstratios7/CrossRIE.git
-cd CrossRIE
+python -m pip install crient
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/bongiornoc/CrossRIEnet.git
+cd CrossRIEnet
 python -m pip install -e .
 ```
 
@@ -332,9 +338,13 @@ precision is required.
 
 ## Requirements
 
-- Python 3.10--3.12
-- TensorFlow 2.16.1--2.21
-- Keras 3
+- Python >=3.10
+- TensorFlow >=2.16.1
+- Keras >=3.0
+
+These are lower bounds, not upper compatibility limits. The CI matrix tests
+selected Python and TensorFlow versions; newer compatible releases are allowed
+by the package metadata.
 
 ## Development
 
@@ -374,8 +384,7 @@ crient.print_citation()
 
 For questions, issues, or contributions,
 
-- Open an issue on [GitHub](https://github.com/bongiornoc/CrossRIE/issues)
+- Open an issue on [GitHub](https://github.com/bongiornoc/CrossRIEnet/issues)
 - Check the documentation
 - Contact Efstratios Manolakis (<stratomanolaki@gmail.com>)
 - Contact Prof. Christian Bongiorno (<christian.bongiorno@centralesupelec.fr>) for calibrated model weights or collaboration requests
-

@@ -2,7 +2,7 @@
 
 All notable changes are documented in this file.
 
-## 0.2.0 - Unreleased
+## 0.2.0 - 2026-08-01
 
 - Rename the Python package and distribution to `crient`.
 - Replace the 0.1 API with `output_type` and descriptive output names.

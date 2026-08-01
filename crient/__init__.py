@@ -17,7 +17,7 @@ Physics-Informed Singular-Value Learning for Cross-Covariances Forecasting
 in Financial Markets. arXiv:2601.07687v3.
 
 Software: CRIENT {__version__}
-https://github.com/Efstratios7/CrossRIE
+https://github.com/bongiornoc/CrossRIEnet
 """
     )
 
